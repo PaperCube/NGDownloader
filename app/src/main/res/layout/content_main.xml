@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/content_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:showIn="@layout/activity_main"
+        tools:context="studio.papercube.ngdownloader.MainActivity">
+
+    <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/input_layout_song_id">
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/input_field_song_id" android:hint="@string/input_field_song_id_hint"/>
+    </android.support.design.widget.TextInputLayout>
+    <Button
+            android:text="@string/button_resolve"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_below="@+id/input_layout_song_id"
+            android:id="@+id/button_resolve" style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_alignParentEnd="true" android:onClick="actionResolve"/>
+    <TextView
+            android:text="@string/text_show_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:layout_below="@+id/button_resolve"
+            android:layout_alignParentStart="true" android:id="@+id/text_resolve_result"/>
+
+</RelativeLayout>

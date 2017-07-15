@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">NGDownloader</string>
+    <string name="action_settings">Settings</string>
+    <string name="input_field_song_id_hint">歌曲编号</string>
+    <string name="button_resolve">解析</string>
+    <string name="text_show_result">结果将会在这里显示</string>
+    <string name="text_confirm_ok">好的</string>
+</resources>
