@@ -28,3 +28,11 @@
 -dontwarn okio.**
 -dontwarn javax.annotation.Nullable
 -dontwarn javax.annotation.ParametersAreNonnullByDefault
+
+-keep class * extends studio.papercube.ngdownloader.BeanObject {
+    *;
+}
+
+-keep class * extends java.io.Serializable {
+    *;
+}

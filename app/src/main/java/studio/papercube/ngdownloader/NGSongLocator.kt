@@ -6,7 +6,7 @@ import com.google.gson.reflect.TypeToken
 import java.io.Serializable
 import java.net.URL
 
-class NGSongLocator private constructor() : Serializable {
+class NGSongLocator private constructor() : BeanObject {
     companion object {
         @JvmStatic fun parse(rawJson: String): NGSongLocator? = Gson().fromJson<List<NGSongLocator>>(
                 rawJson,
@@ -31,7 +31,7 @@ class NGSongLocator private constructor() : Serializable {
 
     fun getURL() = URL(url)
 
-    class Params : Serializable {
+    class Params : BeanObject {
         var filename: String? = null; internal set
         var name: String? = null; internal set
         var length: Int? = null; internal set

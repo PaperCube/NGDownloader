@@ -35,6 +35,7 @@
             android:text="@string/text_show_result"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" android:layout_below="@+id/button_resolve"
-            android:layout_alignParentStart="true" android:id="@+id/text_resolve_result"/>
+            android:layout_alignParentStart="true" android:id="@+id/text_resolve_result"
+            android:textIsSelectable="true"/>
 
 </RelativeLayout>
