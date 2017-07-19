@@ -42,14 +42,16 @@ open class StreamCopyToFile(input: InputStream,
 
     open fun start() {
         if (isClosed) throw IllegalStateException("Object closed")
-        while (true) {
-            val char = inputStream.read()
-            if (char == -1) {
-                close()
-                break
-            } else {
-                outputStream.write(char)
-                writtenBytes++
+        use {
+            while (true) {
+                val char = inputStream.read()
+                if (char == -1) {
+                    close()
+                    break
+                } else {
+                    outputStream.write(char)
+                    writtenBytes++
+                }
             }
         }
     }

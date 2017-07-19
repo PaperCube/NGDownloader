@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
             buttonDownload.isEnabled = !value
             progressBar.isIndeterminate = value
             progressBar.visibility = if (value) VISIBLE else GONE
-            textDownloadProgress.visibility = if(value) VISIBLE else GONE
+            textDownloadProgress.visibility = if (value) VISIBLE else GONE
         }
 
     private val downloadProgressUpdateHandler = DownloadProgressUpdateHandler { obj, what ->
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         val (copy, song) = obj
         if (copy.isClosed) return@DownloadProgressUpdateHandler
         val fileSize = song.fileSize ?: -1
-        val fileSizeString:String = fileSize.toAppropriateMemoryUnit()
+        val fileSizeString: String = fileSize.toAppropriateMemoryUnit()
         if (fileSize < 2) {
             progressBar.isIndeterminate = true
         } else {
@@ -90,22 +90,28 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun actionResolve(v: View) = resolveAsync()
+    fun actionResolve(v: View){
+        textResultOfResolve.text = EMPTY_STRING
+        resolveAsync()
+    }
 
     private fun resolveAsync() {
         sharedExecutor.submit {
             doWithUiLocked {
-                var message: CharSequence = "未知状态"
+                var message: CharSequence = EMPTY_STRING
                 try {
                     resolve().let {
-                        message = StringBuilder()
-                                .appendln("URL:${it.url}")
-                                .appendln("File size:${(it.fileSize?.toAppropriateMemoryUnit()) ?: "?"}")
+                        message = it.getFormattedDescription()
                     }
 
                 } catch (e: Exception) {
+                    val msg = getText(R.string.error_song_parse_failure)
                     message = SpannableStringBuilder()
-                            .lineAppended("无法解析 : $e", ForegroundColorSpan(Color.RED))
+                            .lineAppended("$msg: ${e.printStackTraceToString()}",
+                                    ForegroundColorSpan(Color.RED))
+                    //TODO simplify error output
+                    Log.e(LOG_TAG_MAIN, "Failed to resolve song\n" +
+                            e.printStackTraceToString())
                     throw e
                 } finally {
                     runOnUiThread {
@@ -124,6 +130,7 @@ class MainActivity : AppCompatActivity() {
 
     @Suppress("UNUSED_PARAMETER")
     fun actionDownload(v: View) {
+        textResultOfResolve.text = EMPTY_STRING
         downloadAsync()
     }
 
@@ -135,8 +142,10 @@ class MainActivity : AppCompatActivity() {
                             ?.takeIf { it.songId == fetchSongIdFromEditText() }
                             ?: resolve()
 
+                    runOnUiThread { textResultOfResolve.text = song.getFormattedDescription() }
+
                     val copy = song.saveToDirectory(getExternalFilesDir(null))
-                    LooperThread(500,"Progress notifier"){
+                    LooperThread(500, "Progress notifier") {
                         downloadProgressUpdateHandler.sendMessage(Message().apply {
                             obj = DownloadProgress(copy, song)
                         })
@@ -147,13 +156,20 @@ class MainActivity : AppCompatActivity() {
                     copy.start()
 
                     runOnUiThread {
-                        Toast.makeText(this, "Saved song to ${copy.file.absolutePath}", Toast.LENGTH_LONG)
+                        Toast.makeText(this, "${getText(R.string.notice_saved_song_to)}" +
+                                " ${copy.file.absolutePath}", Toast.LENGTH_LONG)
                                 .show()
                     }
                 }
             } catch (e: Exception) {
                 runOnUiThread {
-                    topLayout.createSnackBar("下载失败：$e")
+                    val msg = getText(R.string.error_song_download_failure).toString()
+                    textResultOfResolve.text = SpannableStringBuilder()
+                            .lineAppended("$msg: ${e.printStackTraceToString()}", ForegroundColorSpan(Color.RED))
+                    //TODO simplify error output
+                    topLayout.createSnackBar("$msg: $e")
+                    Log.e(LOG_TAG_MAIN, "Failed to download song")
+                    Log.e(LOG_TAG_MAIN, e.printStackTraceToString())
                 }
             }
         }
@@ -192,11 +208,20 @@ class MainActivity : AppCompatActivity() {
 
     data class DownloadProgress(val copy: StreamCopyToFile, val song: NGSongLocator)
 
+    private fun NGSongLocator.getFormattedDescription(isDetailed: Boolean = true) = StringBuilder().apply {
+        if (isDetailed) {
+            appendln("URL: $url")
+        }
+        appendln("${getText(R.string.song_param_file_size)}: ${fileSize?.toAppropriateMemoryUnit()}")
+        if (isDetailed)
+            appendln("${getText(R.string.song_param_song_length)}: ${params?.length}")
+        appendln("${getText(R.string.song_param_artist)}: ${params?.artist}")
+    }
 }
 
 fun Int.toAppropriateMemoryUnit() = toLong().toAppropriateMemoryUnit()
 fun Long.toAppropriateMemoryUnit(): String {
-    if(this < 0) return "?"
+    if (this < 0) return "?"
     val memoryUnits = arrayOf("B", "KB", "MB", "GB", "TB")
     var temp = this.toDouble()
     var power = 0

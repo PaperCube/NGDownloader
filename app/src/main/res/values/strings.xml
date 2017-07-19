@@ -6,4 +6,11 @@
     <string name="text_show_result">结果将会在这里显示</string>
     <string name="text_confirm_ok">好的</string>
     <string name="text_button_download">下载</string>
+    <string name="song_param_file_id">文件编号</string>
+    <string name="song_param_file_size">文件大小</string>
+    <string name="song_param_song_length">歌曲长度</string>
+    <string name="song_param_artist">艺术家</string>
+    <string name="error_song_parse_failure">解析失败</string>
+    <string name="error_song_download_failure">下载失败</string>
+    <string name="notice_saved_song_to">歌曲已经保存到</string>
 </resources>
