@@ -8,6 +8,7 @@ android {
             keyPassword 'NGDownloaderKey'
             storeFile file('/Users/papercube/Projects/Android/NGDownloader/NG-KEY.jks')
             storePassword 'NGDownloader'
+            v2SigningEnabled false
         }
     }
     compileSdkVersion 25
@@ -16,7 +17,7 @@ android {
         applicationId "studio.papercube.ngdownloader"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 1
+        versionCode 3
         versionName "1.0"
 //        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
