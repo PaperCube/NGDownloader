@@ -3,11 +3,12 @@ package studio.papercube.ngdownloader
 import okhttp3.Request
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import java.util.concurrent.CancellationException
 
-class NGSongResolver() {
+class NGSongResolver {
     companion object {
         @JvmStatic fun resolve(id: Int): NGSongLocator {
-            var document: Document?
+            val document: Document?
             val responseBody = Request.Builder()
                     .url("http://newgrounds.com/audio/listen/$id")
                     .get()
@@ -20,6 +21,8 @@ class NGSongResolver() {
                                 .execute()
                     }.body()
 
+            cancelIfInterrupted()
+
             document = Jsoup.parse(responseBody?.byteStream(), "UTF-8", "newgrounds.com")
             try {
                 return document.body()
@@ -31,13 +34,15 @@ class NGSongResolver() {
                         .substringBeforeLast("callback:")
                         .substringBeforeLast(",")
                         .let { it + "}]" }
-                        .let { NGSongLocator.parse(it) } ?:
+                        .let { NGSongLocator.parse(id, it) } ?:
                         throw ParseFailure("Failed to find specified html element.")
-            } catch (e: Exception) {
-                if (document.select("title")[0].data().contains("Error")) {
-                    throw SongNotFoundException(id)
-                } else throw e
+            } catch (e: ArrayIndexOutOfBoundsException) {
+                throw SongNotFoundException(id)
             }
+        }
+
+        @JvmStatic private fun cancelIfInterrupted() {
+            if (Thread.currentThread().isInterrupted) throw CancellationException()
         }
     }
 

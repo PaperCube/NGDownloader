@@ -6,7 +6,7 @@ android {
         defaultSigningConfig {
             keyAlias 'NGDownloader App Keystore'
             keyPassword 'NGDownloaderKey'
-            storeFile file('E:/Projects/Android/NGDownloader/NG-KEY.jks')
+            storeFile file('/Users/papercube/Projects/Android/NGDownloader/NG-KEY.jks')
             storePassword 'NGDownloader'
         }
     }
