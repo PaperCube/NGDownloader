@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity() {
             progressBar.progress = copy.writtenBytes
         }
 
+        R.id.visible
         textDownloadProgress.text = "${copy.writtenBytes.toAppropriateMemoryUnit()}/$fileSizeString"
     }
 
@@ -141,6 +142,8 @@ class MainActivity : AppCompatActivity() {
                     val song = currentSong
                             ?.takeIf { it.songId == fetchSongIdFromEditText() }
                             ?: resolve()
+
+                    currentSong = song
 
                     runOnUiThread { textResultOfResolve.text = song.getFormattedDescription() }
 
