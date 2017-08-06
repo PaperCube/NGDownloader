@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.Toast
 import studio.papercube.ngdownloader.R
 
 @Suppress("NOTHING_TO_INLINE")
@@ -35,6 +36,11 @@ fun Activity.createProgressDialog(msg: String, cancellable: Boolean = false, tas
         task()
         progressDialog.dismiss()
     }.start()
+}
+
+fun Context.createToast(msg: CharSequence, duration: Int = Toast.LENGTH_SHORT) {
+    Toast.makeText(this, msg, duration)
+            .show()
 }
 
 fun Context.createMessageDialog(msg: String) {

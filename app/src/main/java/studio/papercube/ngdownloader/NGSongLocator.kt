@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import java.io.File
-import java.io.FileOutputStream
 import java.net.URL
 
 class NGSongLocator private constructor() : BeanObject {
@@ -13,33 +12,44 @@ class NGSongLocator private constructor() : BeanObject {
                 rawJson,
                 object : TypeToken<List<NGSongLocator>>() {}.type
         ).firstOrNull().apply { if (this != null) songId = id }
+
+        @JvmStatic internal fun empty() = NGSongLocator().apply {
+            params = Params()
+        }
     }
 
-    @Transient var songId: Int = 0; private set
+    @Transient var songId: Int = 0; internal set
 
-    var url: String? = null; private set
-    var description: String? = null; private set
+    var url: String? = null; internal set
+    var description: String? = null; internal set
 
     @SerializedName("portal_id")
-    var portalId: Int? = null; private set
+    var portalId: Int? = null; internal set
     @SerializedName("file_id")
-    var fileId: Int? = null; private set
+    var fileId: Int? = null; internal set
     @SerializedName("project_id")
-    var projectId: Int? = null; private set
+    var projectId: Int? = null; internal set
     @SerializedName("item_id")
-    var itemId: Int? = null; private set
+    var itemId: Int? = null; internal set
     @SerializedName("filesize")
-    var fileSize: Int? = null; private set
-    var params: Params? = null; private set
+    var fileSize: Int? = null; internal set
+    var params: Params? = null; internal set
+
+    internal var songNameFallBack: String? = null;
 
     fun getURL() = URL(url)
 
     fun saveToDirectory(dir: File): StreamCopyToFile {
-        val fileName = params?.filename?.substringAfterLast('/') ?: (songId.toString() + ".mp3")
+        val fileName = songName
         val targetFile = File(dir.absolutePath + "/$fileName")
         return StreamCopyToFile(getURL().openStream(), targetFile)
     }
 
+    val songName: String
+        get() {
+            return songNameFallBack ?: params?.filename?.substringAfterLast('/')?.substringBeforeLast(".mp3")
+                    ?: songId.toString()
+        }
 
     override fun equals(other: Any?): Boolean {
         return if (other is NGSongLocator) {

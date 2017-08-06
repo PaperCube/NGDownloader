@@ -18,8 +18,11 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.*
+import studio.papercube.ngdownloader.boomlingstool.BoomlingsTool
 import studio.papercube.ngdownloader.widgets.createSnackBar
+import studio.papercube.ngdownloader.widgets.createToast
 import studio.papercube.ngdownloader.widgets.lineAppended
+import studio.papercube.ngdownloader.widgets.toEditable
 
 class MainActivity : AppCompatActivity() {
     lateinit var editTextSongId: EditText
@@ -34,11 +37,14 @@ class MainActivity : AppCompatActivity() {
 
     private var isInProgress: Boolean = false
         set(value) {
-            buttonResolve.isEnabled = !value
-            buttonDownload.isEnabled = !value
-            progressBar.isIndeterminate = value
-            progressBar.visibility = if (value) VISIBLE else GONE
-            textDownloadProgress.visibility = if (value) VISIBLE else GONE
+            if (value != field) {
+                field = value
+                buttonResolve.isEnabled = !value
+                buttonDownload.isEnabled = !value
+                progressBar.isIndeterminate = value
+                progressBar.visibility = if (value) VISIBLE else GONE
+                textDownloadProgress.visibility = if (value) VISIBLE else GONE
+            }
         }
 
     private val downloadProgressUpdateHandler = DownloadProgressUpdateHandler { obj, what ->
@@ -91,17 +97,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Suppress("UNUSED_PARAMETER")
-    fun actionResolve(v: View){
+    fun actionResolve(v: View) {
         textResultOfResolve.text = EMPTY_STRING
-        resolveAsync()
+        resolveAsyncFromSongId(fetchSongIdFromEditText())
     }
 
-    private fun resolveAsync() {
+    private fun resolveAsyncFromSongId(songId: Int) {
         sharedExecutor.submit {
             doWithUiLocked {
                 var message: CharSequence = EMPTY_STRING
                 try {
-                    resolve().let {
+                    resolveFromSongId(songId).let {
                         message = it.getFormattedDescription()
                     }
 
@@ -123,8 +129,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun resolve(): NGSongLocator {
-        val song: NGSongLocator = fetchSongIdFromEditText().let { NGSongResolver.resolve(it) }
+    private fun resolveFromSongId(songId: Int): NGSongLocator {
+        val song: NGSongLocator = songId.let { NGSongResolver.tryAll().resolve(it) }
         currentSong = song
         return song
     }
@@ -132,49 +138,52 @@ class MainActivity : AppCompatActivity() {
     @Suppress("UNUSED_PARAMETER")
     fun actionDownload(v: View) {
         textResultOfResolve.text = EMPTY_STRING
-        downloadAsync()
+        downloadBySongIdAsync(fetchSongIdFromEditText())
     }
 
-    private fun downloadAsync() {
-        sharedExecutor.submit {
-            try {
-                doWithUiLocked {
-                    val song = currentSong
-                            ?.takeIf { it.songId == fetchSongIdFromEditText() }
-                            ?: resolve()
+    private fun downloadBySongId(songId: Int) {
+        try {
+            doWithUiLocked {
+                val song = currentSong
+                        ?.takeIf { it.songId == fetchSongIdFromEditText() }
+                        ?: resolveFromSongId(songId)
 
-                    currentSong = song
+                currentSong = song
 
-                    runOnUiThread { textResultOfResolve.text = song.getFormattedDescription() }
+                runOnUiThread { textResultOfResolve.text = song.getFormattedDescription() }
 
-                    val copy = song.saveToDirectory(getExternalFilesDir(null))
-                    LooperThread(500, "Progress notifier") {
-                        downloadProgressUpdateHandler.sendMessage(Message().apply {
-                            obj = DownloadProgress(copy, song)
-                        })
+                val copy = song.saveToDirectory(getExternalFilesDir(null))
+                LooperThread(500, "Progress notifier") {
+                    downloadProgressUpdateHandler.sendMessage(Message().apply {
+                        obj = DownloadProgress(copy, song)
+                    })
 
-                        return@LooperThread !copy.isClosed
-                    }.start()
+                    return@LooperThread !copy.isClosed
+                }.start()
 
-                    copy.start()
+                copy.start()
 
-                    runOnUiThread {
-                        Toast.makeText(this, "${getText(R.string.notice_saved_song_to)}" +
-                                " ${copy.file.absolutePath}", Toast.LENGTH_LONG)
-                                .show()
-                    }
-                }
-            } catch (e: Exception) {
                 runOnUiThread {
-                    val msg = getText(R.string.error_song_download_failure).toString()
-                    textResultOfResolve.text = SpannableStringBuilder()
-                            .lineAppended("$msg: ${e.printStackTraceToString()}", ForegroundColorSpan(Color.RED))
-                    //TODO simplify error output
-                    topLayout.createSnackBar("$msg: $e")
-                    Log.e(LOG_TAG_MAIN, "Failed to download song")
-                    Log.e(LOG_TAG_MAIN, e.printStackTraceToString())
+                    createToast("${getText(R.string.notice_saved_song_to)}" +
+                            " ${copy.file.absolutePath}", Toast.LENGTH_LONG)
                 }
             }
+        } catch (e: Exception) {
+            runOnUiThread {
+                val msg = getText(R.string.error_song_download_failure).toString()
+                textResultOfResolve.text = SpannableStringBuilder()
+                        .lineAppended("$msg: ${e.printStackTraceToString()}", ForegroundColorSpan(Color.RED))
+                //TODO simplify error output
+                topLayout.createSnackBar("$msg: $e")
+                Log.e(LOG_TAG_MAIN, "Failed to download song")
+                Log.e(LOG_TAG_MAIN, e.printStackTraceToString())
+            }
+        }
+    }
+
+    private fun downloadBySongIdAsync(songId: Int) {
+        sharedExecutor.submit {
+            downloadBySongId(songId)
         }
     }
 
@@ -192,11 +201,40 @@ class MainActivity : AppCompatActivity() {
 
     private fun fetchSongIdFromEditText(): Int = editTextSongId.text.toString().trim().toIntOrNull() ?: -1
 
+    private fun downloadDaily() {
+        doWithUiLocked {
+            try {
+                val (dailySerialNum, dailyLevelId) = BoomlingsTool.getDaily(sharedOkHttpClient)
+                Log.i(LOG_TAG_MAIN, "Serial: $dailySerialNum, LevelID:$dailyLevelId")
+//                val songId = BoomlingsTool.getSongIdFromLevelId(sharedOkHttpClient, dailyLevelId)
+                val songId = BoomlingsTool.getSongIdFromLevelId(sharedOkHttpClient, -1)
+                runOnUiThread {
+                    createToast(getText(R.string.notice_daily_level_serial_number).toString().format(dailySerialNum))
+                    editTextSongId.text = songId.toString().toEditable()
+                }
+                downloadBySongId(songId)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                topLayout.createSnackBar("未能获得今天的每日关卡: $e")
+            }
+        }
+    }
+
+    private fun downloadDailyAsync() {
+        sharedExecutor.submit {
+            downloadDaily()
+        }
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
 
         return when (id) {
             R.id.action_settings -> true
+            R.id.action_download_daily -> {
+                downloadDailyAsync()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
 

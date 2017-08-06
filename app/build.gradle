@@ -6,7 +6,7 @@ android {
         defaultSigningConfig {
             keyAlias 'NGDownloader App Keystore'
             keyPassword 'NGDownloaderKey'
-            storeFile file('/Users/papercube/Projects/Android/NGDownloader/NG-KEY.jks')
+            storeFile file('E:\\Projects\\Android\\NGDownloader\\NG-KEY.jks')
             storePassword 'NGDownloader'
             v2SigningEnabled false
         }
@@ -17,8 +17,8 @@ android {
         applicationId "studio.papercube.ngdownloader"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 3
-        versionName "1.0"
+        versionCode 4
+        versionName "1.0 beta 4"
 //        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
