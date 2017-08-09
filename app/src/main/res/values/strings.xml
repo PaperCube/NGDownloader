@@ -6,13 +6,15 @@
     <string name="text_show_result">结果将会在这里显示</string>
     <string name="text_confirm_ok">好的</string>
     <string name="text_button_download">下载</string>
-    <string name="notice_daily_level_serial_number">今天是第%s个每日关卡</string>
+    <string name="text_short_period_hms">%1$s小时%2$s分%3$s秒</string>
     <string name="song_param_file_id">文件编号</string>
     <string name="song_param_file_size">文件大小</string>
     <string name="song_param_song_length">歌曲长度</string>
     <string name="song_param_artist">艺术家</string>
     <string name="error_song_parse_failure">解析失败</string>
     <string name="error_song_download_failure">下载失败</string>
+    <string name="notice_daily_level_serial_number_with_valid_seconds">今天是第%1$s个每日关卡，下一个每日关卡将在%2$s放出</string>
+    <string name="notice_failed_to_fetch_daily_level_info">未能获得今天的每日关卡。</string>
     <string name="notice_saved_song_to">歌曲已经保存到</string>
     <string name="action_download_daily">下载今日关卡音乐</string>
 </resources>

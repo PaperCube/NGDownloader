@@ -18,6 +18,8 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.*
+import studio.papercube.ngdownloader.MemoryUnitConversions.toAppropriateMemoryUnit
+import studio.papercube.ngdownloader.TimeConversions.ShortPeriodLocalization
 import studio.papercube.ngdownloader.boomlingstool.BoomlingsTool
 import studio.papercube.ngdownloader.widgets.createSnackBar
 import studio.papercube.ngdownloader.widgets.createToast
@@ -204,18 +206,23 @@ class MainActivity : AppCompatActivity() {
     private fun downloadDaily() {
         doWithUiLocked {
             try {
-                val (dailySerialNum, dailyLevelId) = BoomlingsTool.getDaily(sharedOkHttpClient)
-                Log.i(LOG_TAG_MAIN, "Serial: $dailySerialNum, LevelID:$dailyLevelId")
-//                val songId = BoomlingsTool.getSongIdFromLevelId(sharedOkHttpClient, dailyLevelId)
+                val (dailySerialNum, secondsBeforeExpiration) = BoomlingsTool.getDaily(sharedOkHttpClient)
+                Log.i(LOG_TAG_MAIN, "Serial: $dailySerialNum, Remaining:$secondsBeforeExpiration")
                 val songId = BoomlingsTool.getSongIdFromLevelId(sharedOkHttpClient, -1)
                 runOnUiThread {
-                    createToast(getText(R.string.notice_daily_level_serial_number).toString().format(dailySerialNum))
+                    val remainingTimeString = ShortPeriodLocalization(this, R.string.text_short_period_hms)
+                            .localize(TimeConversions.ShortPeriod.ofSeconds(secondsBeforeExpiration))
+
+                    createToast(getText(R.string.notice_daily_level_serial_number_with_valid_seconds)
+                            .toString()
+                            .format(dailySerialNum, remainingTimeString)
+                    )
                     editTextSongId.text = songId.toString().toEditable()
                 }
                 downloadBySongId(songId)
             } catch (e: Exception) {
-                e.printStackTrace()
-                topLayout.createSnackBar("未能获得今天的每日关卡: $e")
+                Log.e(LOG_TAG_IGNORED_EXCEPTION, e.printStackTraceToString())
+                topLayout.createSnackBar(getText(R.string.notice_failed_to_fetch_daily_level_info).toString() + e.toString())
             }
         }
     }
@@ -260,16 +267,3 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-fun Int.toAppropriateMemoryUnit() = toLong().toAppropriateMemoryUnit()
-fun Long.toAppropriateMemoryUnit(): String {
-    if (this < 0) return "?"
-    val memoryUnits = arrayOf("B", "KB", "MB", "GB", "TB")
-    var temp = this.toDouble()
-    var power = 0
-    while (temp >= 1024) {
-        power++
-        temp /= 1024
-    }
-
-    return "${"%.2f".format(temp)} ${memoryUnits[power]}"
-}

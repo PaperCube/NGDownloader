@@ -65,7 +65,7 @@ object BoomlingsTool {
             .addSecret()
 
     @JvmStatic
-    fun getDaily(okHttpClient: OkHttpClient): DailyLevel {
+    fun getDaily(okHttpClient: OkHttpClient): DailyLevelResponse {
         return DailyParser().parse(getDailyLevelResponse(okHttpClient))
     }
 

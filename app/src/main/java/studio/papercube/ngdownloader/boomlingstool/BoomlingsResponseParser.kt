@@ -4,18 +4,17 @@ import okhttp3.Response
 import studio.papercube.ngdownloader.NGSongLocator
 import java.net.URLDecoder
 
-data class DailyLevel(val levelSerial: Int, val levelId: Int)
-class DailyParser : ResponseParser<DailyLevel>() {
-    override fun parse(inputObj: Response): DailyLevel {
+class DailyParser : ResponseParser<DailyLevelResponse>() {
+    override fun parse(inputObj: Response): DailyLevelResponse {
         return parse(tryGetResponseString(inputObj))
     }
 
     /**
      * @throws RuntimeException
      */
-    fun parse(string: String): DailyLevel {
+    fun parse(string: String): DailyLevelResponse {
         val split = string.split(delimiters = '|')
-        return DailyLevel(split[0].toInt(), split[1].toInt())
+        return DailyLevelResponse(split[0].toInt(), split[1].toInt())
     }
 }
 
