@@ -1,4 +1,4 @@
-package studio.papercube.ngdownloader
+package studio.papercube.ngdownloader.activities
 
 import android.graphics.Color
 import android.os.Bundle
@@ -18,6 +18,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.widget.*
+import studio.papercube.ngdownloader.*
 import studio.papercube.ngdownloader.MemoryUnitConversions.toAppropriateMemoryUnit
 import studio.papercube.ngdownloader.TimeConversions.ShortPeriodLocalization
 import studio.papercube.ngdownloader.boomlingstool.BoomlingsTool
