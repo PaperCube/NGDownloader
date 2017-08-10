@@ -17,4 +17,7 @@
     <string name="notice_failed_to_fetch_daily_level_info">未能获得今天的每日关卡。</string>
     <string name="notice_saved_song_to">歌曲已经保存到</string>
     <string name="action_download_daily">下载今日关卡音乐</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
 </resources>
