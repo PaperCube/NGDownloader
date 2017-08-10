@@ -1,9 +1,11 @@
 package studio.papercube.ngdownloader.activities
 
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.preference.PreferenceManager
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
 import android.support.design.widget.Snackbar
@@ -28,15 +30,20 @@ import studio.papercube.ngdownloader.widgets.lineAppended
 import studio.papercube.ngdownloader.widgets.toEditable
 
 class MainActivity : AppCompatActivity() {
-    lateinit var editTextSongId: EditText
-    lateinit var buttonResolve: Button
-    lateinit var buttonDownload: Button
-    lateinit var textResultOfResolve: TextView
-    lateinit var progressBar: ProgressBar
-    lateinit var topLayout: CoordinatorLayout
-    lateinit var textDownloadProgress: TextView
+    private lateinit var editTextSongId: EditText
+    private lateinit var buttonResolve: Button
+    private lateinit var buttonDownload: Button
+    private lateinit var textResultOfResolve: TextView
+    private lateinit var progressBar: ProgressBar
+    private lateinit var topLayout: CoordinatorLayout
+    private lateinit var textDownloadProgress: TextView
+    lateinit var pref: SharedPreferences private set
 
     private var currentSong: NGSongLocator? = null
+
+    enum class PreferenceNames {
+        song_name_id_only;
+    }
 
     private var isInProgress: Boolean = false
         set(value) {
@@ -72,6 +79,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        pref = PreferenceManager.getDefaultSharedPreferences(this)
 
         editTextSongId = findViewById(R.id.input_field_song_id) as EditText
         buttonResolve = findViewById(R.id.button_resolve) as Button
@@ -96,6 +104,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        menu?.let { m ->
+            //TODO make elegant
+            pref.edit()
+                    .putBoolean(PreferenceNames.song_name_id_only.name, m.findItem(R.id.option_file_name_id_only).isChecked)
+                    .apply()
+        }
+
         return true
     }
 
@@ -155,7 +174,12 @@ class MainActivity : AppCompatActivity() {
 
                 runOnUiThread { textResultOfResolve.text = song.getFormattedDescription() }
 
-                val copy = song.saveToDirectory(getExternalFilesDir(null))
+                val overrideFileName = if (pref.getBoolean(PreferenceNames.song_name_id_only.name, false)) {
+                    "${song.songId}.mp3"
+                } else null
+
+                val copy = song.saveToDirectory(getExternalFilesDir(null), overrideFileName)
+
                 LooperThread(500, "Progress notifier") {
                     downloadProgressUpdateHandler.sendMessage(Message().apply {
                         obj = DownloadProgress(copy, song)
@@ -237,15 +261,17 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
 
-        return when (id) {
-            R.id.action_settings -> true
-            R.id.action_download_daily -> {
-                downloadDailyAsync()
-                true
+        when (id) {
+            R.id.action_download_daily -> downloadDailyAsync()
+            R.id.option_file_name_id_only -> {
+                //TODO make elegant
+                pref.edit()
+                        .putBoolean(PreferenceNames.song_name_id_only.name, item.isChecked)
+                        .apply()
             }
-            else -> super.onOptionsItemSelected(item)
+            else -> return false
         }
-
+        return true
     }
 
     private class DownloadProgressUpdateHandler(private val task: (Any?, Int) -> Unit) : Handler() {
