@@ -41,6 +41,8 @@ class MainActivity : AppCompatActivity() {
 
     private var currentSong: NGSongLocator? = null
 
+    private lateinit var prefBind: PreferenceCheckableMenuItemBind
+
     enum class PreferenceNames {
         song_name_id_only;
     }
@@ -80,6 +82,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         pref = PreferenceManager.getDefaultSharedPreferences(this)
+        prefBind = PreferenceCheckableMenuItemBind(pref)
 
         editTextSongId = findViewById(R.id.input_field_song_id) as EditText
         buttonResolve = findViewById(R.id.button_resolve) as Button
@@ -99,22 +102,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         progressBar.visibility = GONE
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+        prefBind.bind(PreferenceNames.song_name_id_only, menu.findItem(R.id.option_file_name_id_only))
+//                .bind(......)
         return true
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.let { m ->
-            //TODO make elegant
-            pref.edit()
-                    .putBoolean(PreferenceNames.song_name_id_only.name, m.findItem(R.id.option_file_name_id_only).isChecked)
-                    .apply()
-        }
-
+        prefBind.retrieve()
         return true
     }
 
@@ -263,12 +261,7 @@ class MainActivity : AppCompatActivity() {
 
         when (id) {
             R.id.action_download_daily -> downloadDailyAsync()
-            R.id.option_file_name_id_only -> {
-                //TODO make elegant
-                pref.edit()
-                        .putBoolean(PreferenceNames.song_name_id_only.name, item.isChecked)
-                        .apply()
-            }
+            R.id.option_file_name_id_only -> prefBind.update(PreferenceNames.song_name_id_only)
             else -> return false
         }
         return true
