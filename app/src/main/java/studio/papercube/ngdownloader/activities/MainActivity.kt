@@ -7,8 +7,6 @@ import android.os.Handler
 import android.os.Message
 import android.preference.PreferenceManager
 import android.support.design.widget.CoordinatorLayout
-import android.support.design.widget.FloatingActionButton
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.text.SpannableStringBuilder
@@ -41,7 +39,7 @@ class MainActivity : AppCompatActivity() {
 
     private var currentSong: NGSongLocator? = null
 
-    private lateinit var prefBind: PreferenceCheckableMenuItemBind
+    lateinit var prefBind: PreferenceCheckableMenuItemBind private set
 
     enum class PreferenceNames {
         song_name_id_only;
@@ -95,11 +93,11 @@ class MainActivity : AppCompatActivity() {
         val toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
 
-        val fab = findViewById(R.id.fab) as FloatingActionButton
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
+//        val fab = findViewById(R.id.fab) as FloatingActionButton
+//        fab.setOnClickListener { view ->
+//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                    .setAction("Action", null).show()
+//        }
 
         progressBar.visibility = GONE
     }
@@ -108,12 +106,12 @@ class MainActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.menu_main, menu)
         prefBind.bind(PreferenceNames.song_name_id_only, menu.findItem(R.id.option_file_name_id_only))
 //                .bind(......)
-        return true
+        return super.onCreateOptionsMenu(menu)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        prefBind.retrieve()
-        return true
+//        prefBind.retrieve()
+        return super.onPrepareOptionsMenu(menu)
     }
 
     @Suppress("UNUSED_PARAMETER")
@@ -172,8 +170,8 @@ class MainActivity : AppCompatActivity() {
 
                 runOnUiThread { textResultOfResolve.text = song.getFormattedDescription() }
 
-                val overrideFileName = if (pref.getBoolean(PreferenceNames.song_name_id_only.name, false)) {
-                    "${song.songId}.mp3"
+                val overrideFileName = if (prefBind[PreferenceNames.song_name_id_only, false]) {
+                    "${song.songId}"
                 } else null
 
                 val copy = song.saveToDirectory(getExternalFilesDir(null), overrideFileName)
@@ -257,14 +255,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        super.onOptionsItemSelected(item)
         val id = item.itemId
 
         when (id) {
             R.id.action_download_daily -> downloadDailyAsync()
             R.id.option_file_name_id_only -> prefBind.update(PreferenceNames.song_name_id_only)
-            else -> return false
+//            else -> return false
         }
-        return true
+        return false // the default implementation simply returns false. It's supposed to return false to make it pass through
     }
 
     private class DownloadProgressUpdateHandler(private val task: (Any?, Int) -> Unit) : Handler() {

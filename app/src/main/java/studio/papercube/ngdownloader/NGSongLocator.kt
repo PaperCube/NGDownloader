@@ -39,6 +39,11 @@ class NGSongLocator private constructor() : BeanObject {
 
     fun getURL() = URL(url)
 
+    /**
+     * Return a [StreamCopyToFile] object, which represents a task to save the bytes in a stream to a file.
+     * @param dir The directory where target file should be saved.
+     * @param overrideFileName the name without extension to save the song under forcibly. `null` means override nothing (use original name)
+     */
     fun saveToDirectory(dir: File, overrideFileName: String? = null): StreamCopyToFile {
         val fileName = overrideFileName ?: songName
         val targetFile = File(dir.absolutePath + "/$fileName.mp3")

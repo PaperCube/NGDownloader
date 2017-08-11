@@ -8,6 +8,7 @@ open class PreferenceCheckableMenuItemBind(private val preference: SharedPrefere
     private val binds: MutableMap<String, Pair<MenuItem, Boolean>> = ConcurrentHashMap()
 
     open fun bind(key: String, menuItem: MenuItem, defaultValue: Boolean = false) = apply {
+        menuItem.isCheckable = true
         binds.put(key, Pair(menuItem, defaultValue))
     }
 
@@ -33,6 +34,10 @@ open class PreferenceCheckableMenuItemBind(private val preference: SharedPrefere
 
     open fun update(key: String): Boolean {
         binds[key]?.let { (menuItem, _) ->
+            // I really cannot understand why the following statement is necessary.
+            // I think it should be processed by the system automatically, but in fact it didn't.
+            // If you know how this comes, please tell me / send me an issue on github.
+            menuItem.isChecked = !menuItem.isChecked
             preference.edit()
                     .putBoolean(key, menuItem.isChecked)
                     .apply()
