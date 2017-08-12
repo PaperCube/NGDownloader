@@ -72,7 +72,6 @@ class MainActivity : AppCompatActivity() {
             progressBar.progress = copy.writtenBytes
         }
 
-        R.id.visible
         textDownloadProgress.text = "${copy.writtenBytes.toAppropriateMemoryUnit()}/$fileSizeString"
     }
 
@@ -110,7 +109,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-//        prefBind.retrieve()
+        prefBind.retrieve()
         return super.onPrepareOptionsMenu(menu)
     }
 

@@ -1,5 +1,5 @@
 Android port of NGDownloader, originally written in C# by [WEGFan](https://github.com/WEGFan). See [here](https://github.com/WEGFan/NewgroundsSongDownloader).
-NGDownloader (Android) is now *updating independently*. Everyone is welcome to fork this project & contribute codes, and I really needs code contributions.
+NGDownloader (Android) is now *updating independently*. Everyone is welcome to fork this project & contribute codes, and I really desire code contributions.
 
 # What is this app used for?
 
