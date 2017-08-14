@@ -17,25 +17,25 @@ android {
         applicationId "studio.papercube.ngdownloader"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 5
-        versionName "1.0 beta 5"
+        versionCode 6
+        versionName "1.0 beta 6"
 //        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-			signingConfig signingConfigs.defaultSigningConfig
+            signingConfig signingConfigs.defaultSigningConfig
         }
 
         debug {
             minifyEnabled false
-			signingConfig signingConfigs.defaultSigningConfig
+            signingConfig signingConfigs.defaultSigningConfig
             versionNameSuffix '-debug'
         }
     }
 
-    lintOptions{
+    lintOptions {
         abortOnError false
     }
 }
@@ -45,10 +45,10 @@ dependencies {
     //    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
     //        exclude group: 'com.android.support', module: 'support-annotations'
     //    })
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:support-annotations:25.3.1'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile 'com.squareup.okhttp3:okhttp:3.8.1'
     compile 'com.google.code.gson:gson:2.8.1'
     compile 'org.jsoup:jsoup:1.10.3'

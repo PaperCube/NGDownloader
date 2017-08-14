@@ -260,7 +260,6 @@ class MainActivity : AppCompatActivity() {
         when (id) {
             R.id.action_download_daily -> downloadDailyAsync()
             R.id.option_file_name_id_only -> prefBind.update(PreferenceNames.song_name_id_only)
-//            else -> return false
         }
         return false // the default implementation simply returns false. It's supposed to return false to make it pass through
     }
