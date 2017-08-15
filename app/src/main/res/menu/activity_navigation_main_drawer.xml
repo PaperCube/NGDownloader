@@ -4,10 +4,11 @@
     <group android:checkableBehavior="single">
         <item
                 android:id="@+id/nav_search_song"
+                android:checked="true"
                 android:title="@string/text_nav_search_song"/>
         <item
-                android:id="@+id/nav_all_songs"
-                android:title="@string/text_nav_all_songs"/>
+                android:id="@+id/nav_all_downloaded_songs"
+                android:title="@string/text_nav_all_downloaded_songs"/>
     </group>
 
 </menu>
