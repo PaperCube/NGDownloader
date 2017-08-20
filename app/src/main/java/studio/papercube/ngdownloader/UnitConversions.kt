@@ -17,7 +17,10 @@ object MemoryUnitConversions {
             temp /= 1024
         }
 
-        return "${"%.2f".format(temp)} ${memoryUnits[power]}"
+        return if (power > 0)
+            "${"%.2f".format(temp)} ${memoryUnits[power]}"
+        else
+            "$this ${memoryUnits[power]}"
     }
 }
 
