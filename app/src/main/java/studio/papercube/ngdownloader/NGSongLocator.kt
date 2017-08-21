@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import java.io.File
 import java.net.URL
+import java.net.URLDecoder
 
 class NGSongLocator private constructor() : BeanObject {
     companion object {
@@ -45,14 +46,16 @@ class NGSongLocator private constructor() : BeanObject {
      * @param overrideFileName the name without extension to save the song under forcibly. `null` means override nothing (use original name)
      */
     fun saveToDirectory(dir: File, overrideFileName: String? = null): StreamCopyToFile {
-        val fileName = overrideFileName ?: songName
+        val fileName = overrideFileName ?: "$songId - $songName"
         val targetFile = File(dir.absolutePath + "/$fileName.mp3")
         return StreamCopyToFile(getURL().openStream(), targetFile)
     }
 
     val songName: String
         get() {
-            return songNameFallBack ?: params?.filename?.substringAfterLast('/')?.substringBeforeLast(".mp3")
+            return songNameFallBack
+                    ?: URLDecoder.decode(params?.name, "UTF-8")
+                    ?: params?.filename?.substringAfterLast('/')?.substringBeforeLast(".mp3")
                     ?: songId.toString()
         }
 

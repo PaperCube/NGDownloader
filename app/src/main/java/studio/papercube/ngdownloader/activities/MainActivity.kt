@@ -27,6 +27,7 @@ import studio.papercube.ngdownloader.widgets.createToast
 import studio.papercube.ngdownloader.widgets.lineAppended
 import studio.papercube.ngdownloader.widgets.toEditable
 
+@Deprecated("Replaced with NavigationMainActivity")
 class MainActivity : AppCompatActivity() {
     private lateinit var editTextSongId: EditText
     private lateinit var buttonResolve: Button

@@ -1,12 +1,14 @@
 <resources>
     <string name="app_name">NGDownloader</string>
     <string name="action_options_menu">选项</string>
+    <string name="action_delete">删除</string>
     <string name="input_field_song_id_hint">歌曲编号</string>
     <string name="text_button_resolve">解析</string>
     <string name="text_show_result">结果将会在这里显示</string>
     <string name="text_confirm_ok">好的</string>
     <string name="text_button_download">下载</string>
     <string name="text_short_period_hms">%1$s小时%2$s分%3$s秒</string>
+    <string name="text_unknown_artist">未知艺术家</string>
     <string name="song_param_file_id">文件编号</string>
     <string name="song_param_file_size">文件大小</string>
     <string name="song_param_song_length">歌曲长度</string>

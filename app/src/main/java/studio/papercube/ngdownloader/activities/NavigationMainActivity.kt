@@ -10,10 +10,13 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.MenuItem
+import studio.papercube.ngdownloader.EMPTY_STRING
+import studio.papercube.ngdownloader.LocalSongIndexes
 import studio.papercube.ngdownloader.R
 import studio.papercube.ngdownloader.UniqueInstanceManager
 import studio.papercube.ngdownloader.fragments.DownloadedSongsManagerFragment
 import studio.papercube.ngdownloader.fragments.SearchSongsFragment
+import studio.papercube.ngdownloader.widgets.createProgressDialog
 
 class NavigationMainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var currentFragment: Fragment
@@ -35,6 +38,10 @@ class NavigationMainActivity : AppCompatActivity(), NavigationView.OnNavigationI
         val navigationView = findViewById(R.id.nav_view) as NavigationView
         navigationView.setNavigationItemSelectedListener(this)
 
+        createProgressDialog(EMPTY_STRING) {
+            LocalSongIndexes.initDefault(this)
+        }
+
         switchMainFragment(loadedFragmentsManager.get<SearchSongsFragment>())
     }
 
@@ -49,7 +56,7 @@ class NavigationMainActivity : AppCompatActivity(), NavigationView.OnNavigationI
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.navigation_main, menu)
+//        menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 

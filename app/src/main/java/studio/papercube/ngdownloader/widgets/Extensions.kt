@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
 import android.os.Looper
+import android.support.annotation.IdRes
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
 import android.text.Editable
@@ -30,7 +31,7 @@ fun View.createSnackBar(text: String, length: Int = Snackbar.LENGTH_SHORT, actio
             }
 }
 
-fun Activity.createProgressDialog(msg: String, cancellable: Boolean = false, task: () -> Unit) {
+fun Activity.createProgressDialog(msg: String?, cancellable: Boolean = false, task: () -> Unit) {
     val progressDialog = ProgressDialog.show(this, null, msg, true, cancellable)
     Thread {
         task()
@@ -68,6 +69,7 @@ inline fun looperPrepared(task: () -> Unit) {
 
 fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)
 
+inline fun <reified ViewType : View> View.findView(@IdRes idRes: Int) = findViewById(idRes) as ViewType
 
 open class AfterTextChangedListener(val action: (String) -> Unit) : TextWatcher {
     override fun afterTextChanged(p0: Editable?) {

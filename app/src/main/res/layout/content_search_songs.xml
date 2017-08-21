@@ -3,12 +3,11 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/content_main"
+        android:id="@+id/top_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:showIn="@layout/activity_main"
-        tools:context="studio.papercube.ngdownloader.activities.MainActivity">
+        tools:showIn="@layout/activity_main">
 
     <android.support.design.widget.TextInputLayout
             android:layout_width="0dp"
@@ -39,7 +38,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/button_resolve" style="@style/Widget.AppCompat.Button.Colored"
-            android:onClick="actionResolve"
             app:layout_constraintRight_toLeftOf="@+id/button_download" tools:layout_constraintTop_creator="1"
             tools:layout_constraintRight_creator="1" app:layout_constraintTop_toBottomOf="@+id/input_layout_song_id"
             android:layout_marginRight="8dp" android:layout_marginEnd="8dp"/>
@@ -48,7 +46,6 @@
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:id="@+id/button_download" style="@style/Widget.AppCompat.Button.Colored"
-            android:onClick="actionDownload"
             android:layout_marginRight="8dp"
             app:layout_constraintRight_toRightOf="@+id/input_layout_song_id"
             app:layout_constraintTop_toBottomOf="@+id/input_layout_song_id" android:layout_marginEnd="8dp"/>
