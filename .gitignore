@@ -6,7 +6,8 @@
 /build
 /captures
 .externalNativeBuild
-/NG-KEY.jks
+NG-KEY.jks
+/app/NG-KEY.jks
 build
 /app/build
 /app/src/androidTest
